@@ -52,7 +52,7 @@ namespace CoursesAPI.Services.Services
 		/// <param name="semester"></param>
 		/// <param name="page">1-based index of the requested page.</param>
 		/// <returns></returns>
-		public List<CourseInstanceDTO> GetCourseInstancesBySemester(string semester = null, int page = 1, bool english = false)
+		public Envelope GetCourseInstancesBySemester(string semester = null, int page = 1, bool english = false)
 		{
 			if (string.IsNullOrEmpty(semester))
 			{
@@ -69,8 +69,14 @@ namespace CoursesAPI.Services.Services
 					CourseInstanceID   = c.ID,
 					MainTeacher        = "" // Hint: it should not always return an empty string!
 				}).ToList();
-
-			return courses;
+			Envelope myEnvelope = new Envelope();
+			myEnvelope.page = new Page();
+			myEnvelope.courses = courses;
+			myEnvelope.page.PageCount = 0;
+			myEnvelope.page.PageNumber = 0;
+			myEnvelope.page.PageSize = 0;
+			myEnvelope.page.TotalNumberOfItems = 0;
+			return myEnvelope;
 		}
 	}
 }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CoursesAPI.Models
 {
-	class Page
+	public class Page
 	{
-		int PageCount { get; set; }
-		int PageSize { get; set; }
-		int PageNumber { get; set; }
-		int TotalNumberOfItems { get; set; }
+		public int PageCount { get; set; }
+		public int PageSize { get; set; }
+		public int PageNumber { get; set; }
+		public int TotalNumberOfItems { get; set; }
 	}
 }
