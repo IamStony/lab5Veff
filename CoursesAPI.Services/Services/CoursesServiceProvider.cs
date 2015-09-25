@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CoursesAPI.Models;
 using CoursesAPI.Services.DataAccess;
@@ -15,6 +16,8 @@ namespace CoursesAPI.Services.Services
 		private readonly IRepository<TeacherRegistration> _teacherRegistrations;
 		private readonly IRepository<CourseTemplate> _courseTemplates; 
 		private readonly IRepository<Person> _persons;
+
+		private const int numberOnPage = 10;
 
 		public CoursesServiceProvider(IUnitOfWork uow)
 		{
@@ -58,24 +61,28 @@ namespace CoursesAPI.Services.Services
 			{
 				semester = "20153";
 			}
-
+			int skip = page - 1;
+			skip *= numberOnPage;
+			int pagenum = page*numberOnPage;
+			var totalNumber = _courseInstances.All().Count();
 			var courses = (from c in _courseInstances.All()
 				join ct in _courseTemplates.All() on c.CourseID equals ct.CourseID
 				where c.SemesterID == semester
 				select new CourseInstanceDTO
 				{
-					Name               = english ? ct.NameEN : ct.Name,
-					TemplateID         = ct.CourseID,
-					CourseInstanceID   = c.ID,
-					MainTeacher        = "" // Hint: it should not always return an empty string!
-				}).ToList();
+					Name = english ? ct.NameEN : ct.Name,
+					TemplateID = ct.CourseID,
+					CourseInstanceID = c.ID,
+					MainTeacher = "" // Hint: it should not always return an empty string!
+				}).ToList().Skip(skip).Take(pagenum).ToList();
+			var pageCount = Math.Ceiling(((decimal)totalNumber/(decimal)numberOnPage));
 			Envelope myEnvelope = new Envelope();
 			myEnvelope.page = new Page();
 			myEnvelope.courses = courses;
-			myEnvelope.page.PageCount = 0;
-			myEnvelope.page.PageNumber = 0;
-			myEnvelope.page.PageSize = 0;
-			myEnvelope.page.TotalNumberOfItems = 0;
+			myEnvelope.page.PageCount = (int) pageCount;
+			myEnvelope.page.PageNumber = page;
+			myEnvelope.page.PageSize = numberOnPage;
+			myEnvelope.page.TotalNumberOfItems = totalNumber;
 			return myEnvelope;
 		}
 	}
