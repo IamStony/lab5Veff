@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
 using CoursesAPI.Models;
 using CoursesAPI.Services.DataAccess;
 using CoursesAPI.Services.Services;
@@ -21,7 +22,21 @@ namespace CoursesAPI.Controllers
 		{
 			// TODO: figure out the requested language (if any!)
 			// and pass it to the service provider!
-			return Ok(_service.GetCourseInstancesBySemester(semester, page));
+			bool english = false;
+			var lan = Request.Headers.AcceptLanguage.FirstOrDefault();
+			if (lan != null)
+			{
+				// I Thought this was the most logical solution
+				// Example : If there is a french or german exhance student
+				// have their browser set to german or french then they would get
+				// courses in English
+				if (lan.ToString() != "is")
+				{
+					english = true;
+				}
+
+			}
+			return Ok(_service.GetCourseInstancesBySemester(semester, page, english));
 		}
 
 		/// <summary>

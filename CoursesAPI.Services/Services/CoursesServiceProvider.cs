@@ -52,7 +52,7 @@ namespace CoursesAPI.Services.Services
 		/// <param name="semester"></param>
 		/// <param name="page">1-based index of the requested page.</param>
 		/// <returns></returns>
-		public List<CourseInstanceDTO> GetCourseInstancesBySemester(string semester = null, int page = 1)
+		public List<CourseInstanceDTO> GetCourseInstancesBySemester(string semester = null, int page = 1, bool english = false)
 		{
 			if (string.IsNullOrEmpty(semester))
 			{
@@ -64,7 +64,7 @@ namespace CoursesAPI.Services.Services
 				where c.SemesterID == semester
 				select new CourseInstanceDTO
 				{
-					Name               = ct.Name, // TODO: select the name based on the language requested (if any)
+					Name               = english ? ct.NameEN : ct.Name,
 					TemplateID         = ct.CourseID,
 					CourseInstanceID   = c.ID,
 					MainTeacher        = "" // Hint: it should not always return an empty string!
