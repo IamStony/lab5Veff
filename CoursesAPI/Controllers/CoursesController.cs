@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Web.Http;
 using CoursesAPI.Models;
 using CoursesAPI.Services.DataAccess;
@@ -44,12 +45,22 @@ namespace CoursesAPI.Controllers
 		/// <param name="id"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>
+		/// Header : 
+		/// Authorization Bearer eyJ0e.....
 		[HttpPost]
+		[Authorize]
 		[Route("{id}/teachers")]
 		public IHttpActionResult AddTeacher(int id, AddTeacherViewModel model)
 		{
 			var result = _service.AddTeacherToCourse(id, model);
 			return Created("TODO", result);
+		}
+
+		[HttpGet]
+		[Route("{id}", Name = "byID")]
+		public IHttpActionResult GetCourseById(int id)
+		{
+			return null;
 		}
 	}
 }

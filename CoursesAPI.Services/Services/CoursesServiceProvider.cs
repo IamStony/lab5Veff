@@ -42,9 +42,31 @@ namespace CoursesAPI.Services.Services
 			{
 				throw new AppObjectNotFoundException(ErrorCodes.INVALID_COURSEINSTANCEID);
 			}
-
+			var teacher = _persons.All().SingleOrDefault(x => x.SSN == model.SSN);
+			if (teacher == null)
+			{
+				throw  new AppObjectNotFoundException(ErrorCodes.TEACHER_IS_NOT_FOUND_IN_PERSON);
+			}
+			var alreadyHasMain =
+				_teacherRegistrations.All().SingleOrDefault(x => x.ID == courseInstanceID && x.Type == TeacherType.MainTeacher);
+			if (alreadyHasMain != null)
+			{
+				throw new AppObjectNotFoundException(ErrorCodes.COURSE_ALREADY_HAS_A_MAIN_TEACHER);
+			}
+			var adding = new TeacherRegistration
+			{
+				Type = model.Type,
+				CourseInstanceID = courseInstanceID,
+				SSN = model.SSN
+			};
+			_teacherRegistrations.Add(adding);
+			_uow.Save();
 			// TODO: implement this logic!
-			return null;
+			return new PersonDTO
+			{
+				Name = teacher.Name,
+				SSN = teacher.SSN
+			};
 		}
 
 		/// <summary>
