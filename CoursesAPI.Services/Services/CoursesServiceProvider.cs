@@ -69,6 +69,23 @@ namespace CoursesAPI.Services.Services
 			};
 		}
 
+		public CourseInstanceDTO GetCourseById(int id)
+		{
+			var result = _courseInstances.All().SingleOrDefault(x => x.ID == id);
+			if (result == null)
+			{
+				throw new AppObjectNotFoundException(ErrorCodes.INVALID_COURSEINSTANCEID);
+			}
+			var main = _teacherRegistrations.All().FirstOrDefault(x => x.ID == id && x.Type == TeacherType.MainTeacher);
+			return new CourseInstanceDTO
+			{
+				CourseInstanceID = result.ID,
+				TemplateID = result.CourseID,
+				MainTeacher = main == null ? "" : _persons.All().SingleOrDefault(x => x.SSN == main.SSN).Name,
+				Name = _courseTemplates.All().SingleOrDefault(x => x.CourseID == result.CourseID).Name
+			};
+		}
+
 		/// <summary>
 		/// You should write tests for this function. You will also need to
 		/// modify it, such that it will correctly return the name of the main
